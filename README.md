@@ -15,13 +15,6 @@ This project showcases a clean UI design for fitness businesses with sections li
 
 
 ## 📸 Screenshots
-<h2 align="center">📸 Screenshots</h2>
-
-
-<p align="center">
-  <img src="images/home.png" width="80%" /><br><br>
-  <img src="images/package.png" width="80%" />
-</p>
 
 
 ### 🏠 Home Page
@@ -63,11 +56,7 @@ GymWebsite/
 
 ---
 
-## 📸 Screenshots
 
-(Add screenshots here later to improve your portfolio)
-
----
 
 ## 🎯 Purpose
 
