@@ -1,4 +1,11 @@
-<img width="1920" height="900" alt="Screenshot 2026-04-26 202025" src="https://github.com/user-attachments/assets/f362d4a5-6137-47be-b65f-7e8f0c2c30e4" /># 🏋️ Gym Website
+<img width="1920" height="900" alt="Screenshot 2026-04-26 202025" src="https://github.com/user-attachments/assets/f362d4a5-6137-47be-b65f-7e8f0c2c30e4" />
+<h2 align="center">📸 Screenshots</h2>
+
+<p align="center">
+  <img src="images/home.png" width="80%" />
+</p>
+
+# 🏋️ Gym Website
 
 A modern and responsive **Gym Website** built using HTML, CSS, and JavaScript.
 This project showcases a clean UI design for fitness businesses with sections like services, pricing, and contact.
@@ -10,6 +17,17 @@ This project showcases a clean UI design for fitness businesses with sections li
 👉 https://manjupriya-j.github.io/GymWebsite/
 
 ---
+
+## 📸 Screenshots
+
+### 🏠 Home Page
+![Home](images/home.png)
+
+### 💪 Services
+![Services](images/package.png)
+
+
+
 
 ## 📌 Features
 
