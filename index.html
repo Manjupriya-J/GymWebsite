@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IRONFORGE GYM — Forge Your Limits</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neon: '#AAFF00',
+            neonDark: '#88CC00',
+            dark: '#0A0A0A',
+            darkGray: '#111111',
+            panel: '#161616',
+            border: '#242424',
+          },
+          fontFamily: {
+            display: ['Bebas Neue', 'cursive'],
+            heading: ['Barlow Condensed', 'sans-serif'],
+            body: ['DM Sans', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * { scroll-behavior: smooth; }
+
+    body {
+      background-color: #0A0A0A;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* Navbar */
+    #navbar {
+      transition: all 0.4s ease;
+    }
+    #navbar.scrolled {
+      background: rgba(10,10,10,0.97) !important;
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid #242424;
+      box-shadow: 0 4px 40px rgba(170,255,0,0.06);
+    }
+
+    /* Nav links */
+    .nav-link {
+      position: relative;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #aaa;
+      transition: color 0.3s;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #AAFF00;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover { color: #fff; }
+    .nav-link:hover::after { width: 100%; }
+
+    /* Hero */
+    .hero-bg {
+      background: linear-gradient(135deg, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.7) 50%, rgba(10,10,10,0.85) 100%),
+                  url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80') center/cover no-repeat;
+      min-height: 100vh;
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', cursive;
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+    }
+
+    .neon-glow {
+      text-shadow: 0 0 30px rgba(170,255,0,0.6), 0 0 60px rgba(170,255,0,0.3);
+    }
+
+    /* Diagonal divider */
+    .diagonal-top {
+      clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+      padding-bottom: 5rem;
+    }
+    .diagonal-bottom {
+      clip-path: polygon(0 5%, 100% 0, 100% 100%, 0 100%);
+      padding-top: 5rem;
+    }
+
+    /* Buttons */
+    .btn-neon {
+      background: #AAFF00;
+      color: #0A0A0A;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-neon::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+      z-index: 0;
+    }
+    .btn-neon:hover::before { transform: scaleX(1); }
+    .btn-neon span { position: relative; z-index: 1; }
+    .btn-neon:hover { box-shadow: 0 0 40px rgba(170,255,0,0.5); }
+
+    .btn-outline {
+      border: 2px solid #AAFF00;
+      color: #AAFF00;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: all 0.25s ease;
+    }
+    .btn-outline:hover {
+      background: #AAFF00;
+      color: #0A0A0A;
+      box-shadow: 0 0 30px rgba(170,255,0,0.4);
+    }
+
+    /* Program cards */
+    .program-card {
+      background: #111;
+      border: 1px solid #242424;
+      transition: all 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .program-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(170,255,0,0.06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .program-card:hover {
+      border-color: #AAFF00;
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(170,255,0,0.12), 0 0 0 1px rgba(170,255,0,0.2);
+    }
+    .program-card:hover::before { opacity: 1; }
+    .program-card:hover .card-icon { color: #AAFF00; transform: scale(1.15); }
+
+    .card-icon {
+      transition: all 0.35s ease;
+      color: #555;
+      font-size: 2.5rem;
+    }
+
+    /* Trainer cards */
+    .trainer-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #242424;
+      transition: all 0.35s ease;
+    }
+    .trainer-card:hover {
+      border-color: rgba(170,255,0,0.5);
+      transform: translateY(-5px);
+    }
+    .trainer-overlay {
+      background: linear-gradient(to top, rgba(10,10,10,0.98) 0%, rgba(10,10,10,0.5) 50%, transparent 100%);
+    }
+    .trainer-card img {
+      transition: transform 0.5s ease;
+      filter: grayscale(30%);
+    }
+    .trainer-card:hover img {
+      transform: scale(1.05);
+      filter: grayscale(0%);
+    }
+
+    /* Pricing */
+    .pricing-card {
+      border: 1px solid #242424;
+      background: #111;
+      transition: all 0.35s ease;
+      position: relative;
+    }
+    .pricing-card:hover {
+      border-color: #333;
+      transform: translateY(-4px);
+    }
+    .pricing-popular {
+      border-color: #AAFF00 !important;
+      background: linear-gradient(135deg, #111 0%, #131a00 100%);
+      box-shadow: 0 0 0 1px rgba(170,255,0,0.3), 0 30px 80px rgba(170,255,0,0.1);
+    }
+    .pricing-popular:hover {
+      box-shadow: 0 0 0 1px rgba(170,255,0,0.5), 0 40px 100px rgba(170,255,0,0.18);
+    }
+
+    /* Testimonial */
+    .testimonial-card {
+      background: #111;
+      border: 1px solid #242424;
+      transition: all 0.3s ease;
+    }
+    .testimonial-card:hover {
+      border-color: #333;
+      transform: translateY(-3px);
+    }
+
+    /* Floating WhatsApp */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 999;
+      animation: floatPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes floatPulse {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-6px) scale(1.04); }
+    }
+    .whatsapp-float::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: rgba(37,211,102,0.25);
+      animation: ripple 2.5s ease-out infinite;
+    }
+    @keyframes ripple {
+      0% { transform: scale(1); opacity: 0.6; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+
+    /* Scroll animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-40px);
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(40px);
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Ticker */
+    .ticker-wrap {
+      overflow: hidden;
+      background: #AAFF00;
+    }
+    .ticker {
+      display: flex;
+      white-space: nowrap;
+      animation: ticker 25s linear infinite;
+    }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Section label */
+    .section-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      color: #AAFF00;
+    }
+
+    /* Section heading */
+    .section-title {
+      font-family: 'Bebas Neue', cursive;
+      letter-spacing: 0.03em;
+      line-height: 0.95;
+    }
+
+    /* Stats */
+    .stat-number {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 4rem;
+      line-height: 1;
+      color: #AAFF00;
+    }
+
+    /* Map embed */
+    .map-container {
+      border: 1px solid #242424;
+      overflow: hidden;
+    }
+
+    /* Mobile nav */
+    #mobile-menu {
+      display: none;
+    }
+    #mobile-menu.open {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #0A0A0A; }
+    ::-webkit-scrollbar-thumb { background: #AAFF00; border-radius: 4px; }
+
+    /* Star rating */
+    .stars { color: #AAFF00; letter-spacing: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════ NAVBAR ══════════════════════════ -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 py-5 px-6 md:px-10 flex items-center justify-between transition-all duration-400">
+  <!-- Logo -->
+  <a href="#home" class="flex items-center gap-2 group">
+    <div class="w-9 h-9 bg-neon flex items-center justify-center rounded-sm group-hover:bg-white transition-colors duration-300">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M3 10H17M3 6H8M12 14H17M6 6V14M14 6V14" stroke="#0A0A0A" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="font-display text-2xl tracking-widest text-white">IRONFORGE</span>
+  </a>
+
+  <!-- Desktop menu -->
+  <div class="hidden md:flex items-center gap-8">
+    <a href="#home" class="nav-link">Home</a>
+    <a href="#about" class="nav-link">About</a>
+    <a href="#programs" class="nav-link">Programs</a>
+    <a href="#trainers" class="nav-link">Trainers</a>
+    <a href="#pricing" class="nav-link">Pricing</a>
+    <a href="#contact" class="nav-link">Contact</a>
+  </div>
+
+  <!-- CTA + Hamburger -->
+  <div class="flex items-center gap-4">
+    <a href="#contact" class="hidden md:block btn-neon px-5 py-2.5 rounded-sm text-sm">
+      <span>Join Now</span>
+    </a>
+    <button id="hamburger" class="md:hidden flex flex-col gap-1.5 p-2" onclick="toggleMenu()">
+      <span class="block w-6 h-0.5 bg-white transition-all duration-300" id="bar1"></span>
+      <span class="block w-6 h-0.5 bg-white transition-all duration-300" id="bar2"></span>
+      <span class="block w-4 h-0.5 bg-neon transition-all duration-300" id="bar3"></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div id="mobile-menu" class="fixed top-[72px] left-0 right-0 z-40 bg-darkGray border-b border-border px-6 py-6 flex flex-col gap-4">
+  <a href="#home" class="nav-link text-lg" onclick="closeMenu()">Home</a>
+  <a href="#about" class="nav-link text-lg" onclick="closeMenu()">About</a>
+  <a href="#programs" class="nav-link text-lg" onclick="closeMenu()">Programs</a>
+  <a href="#trainers" class="nav-link text-lg" onclick="closeMenu()">Trainers</a>
+  <a href="#pricing" class="nav-link text-lg" onclick="closeMenu()">Pricing</a>
+  <a href="#contact" class="nav-link text-lg" onclick="closeMenu()">Contact</a>
+  <a href="#contact" class="btn-neon px-5 py-3 rounded-sm text-sm text-center mt-2" onclick="closeMenu()">
+    <span>Join Now</span>
+  </a>
+</div>
+
+<!-- ══════════════════════════ HERO ══════════════════════════ -->
+<section id="home" class="hero-bg flex flex-col justify-center relative overflow-hidden">
+  <!-- Grid lines -->
+  <div class="absolute inset-0 opacity-5" style="background-image: linear-gradient(to right, #AAFF00 1px, transparent 1px), linear-gradient(to bottom, #AAFF00 1px, transparent 1px); background-size: 80px 80px;"></div>
+
+  <!-- Accent blob -->
+  <div class="absolute top-1/3 right-10 w-96 h-96 rounded-full opacity-10" style="background: radial-gradient(circle, #AAFF00 0%, transparent 70%); filter: blur(60px);"></div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-10 pt-32 pb-24 md:pt-40 md:pb-32">
+    <div class="max-w-4xl">
+      <p class="section-label mb-5 flex items-center gap-3">
+        <span class="w-8 h-0.5 bg-neon inline-block"></span>
+        Est. 2015 — Premium Fitness Studio
+      </p>
+      <h1 class="hero-title text-7xl sm:text-8xl md:text-[10rem] lg:text-[12rem] text-white leading-none mb-6">
+        FORGE<br/>
+        <span class="text-neon neon-glow">YOUR</span><br/>
+        LIMITS
+      </h1>
+      <p class="text-lg md:text-xl text-gray-400 font-body font-light max-w-xl mb-10 leading-relaxed">
+        Transform your body. Transform your life. Join the most elite fitness community in your city — where strength meets science.
+      </p>
+      <div class="flex flex-wrap gap-4 items-center">
+        <a href="https://wa.me/919999999999" target="_blank" class="btn-neon px-8 py-4 rounded-sm text-base flex items-center gap-3">
+          <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span>Chat on WhatsApp</span>
+        </a>
+        <a href="#programs" class="btn-outline px-8 py-4 rounded-sm text-base">
+          Explore Programs
+        </a>
+      </div>
+
+      <!-- Stats row -->
+      <div class="flex flex-wrap gap-8 mt-16 pt-10 border-t border-border">
+        <div class="reveal">
+          <div class="stat-number">5K+</div>
+          <p class="text-gray-500 text-sm font-heading font-600 tracking-widest uppercase">Members</p>
+        </div>
+        <div class="w-px bg-border hidden sm:block"></div>
+        <div class="reveal" style="transition-delay:0.1s">
+          <div class="stat-number">15+</div>
+          <p class="text-gray-500 text-sm font-heading font-600 tracking-widest uppercase">Expert Trainers</p>
+        </div>
+        <div class="w-px bg-border hidden sm:block"></div>
+        <div class="reveal" style="transition-delay:0.2s">
+          <div class="stat-number">8</div>
+          <p class="text-gray-500 text-sm font-heading font-600 tracking-widest uppercase">Years Running</p>
+        </div>
+        <div class="w-px bg-border hidden sm:block"></div>
+        <div class="reveal" style="transition-delay:0.3s">
+          <div class="stat-number">98%</div>
+          <p class="text-gray-500 text-sm font-heading font-600 tracking-widest uppercase">Satisfaction</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+    <span class="section-label text-xs text-gray-500">Scroll</span>
+    <div class="w-px h-12 bg-gradient-to-b from-gray-500 to-transparent animate-pulse"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ TICKER ══════════════════════════ -->
+<div class="ticker-wrap py-3 overflow-hidden">
+  <div class="ticker">
+    <span class="font-display text-dark text-xl tracking-widest mr-16">WEIGHT TRAINING</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">★</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">CARDIO BURN</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">★</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">PERSONAL TRAINING</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">★</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">YOGA & ZUMBA</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">★</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">CROSSFIT</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">★</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">NUTRITION COACHING</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">★</span>
+    <!-- Duplicate for seamless loop -->
+    <span class="font-display text-dark text-xl tracking-widest mr-16">WEIGHT TRAINING</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">★</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">CARDIO BURN</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">★</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">PERSONAL TRAINING</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">★</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">YOGA & ZUMBA</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">★</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">CROSSFIT</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">★</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">NUTRITION COACHING</span>
+    <span class="font-display text-dark text-xl tracking-widest mr-16">★</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════ ABOUT ══════════════════════════ -->
+<section id="about" class="py-24 md:py-32 bg-darkGray relative overflow-hidden">
+  <div class="absolute top-0 left-0 w-full h-full opacity-5" style="background-image: radial-gradient(circle at 20% 50%, #AAFF00 0%, transparent 50%);"></div>
+
+  <div class="max-w-7xl mx-auto px-6 md:px-10">
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+      <!-- Left: image collage -->
+      <div class="reveal-left relative">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="col-span-2 h-72 rounded-sm overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80" alt="Gym interior" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+          </div>
+          <div class="h-48 rounded-sm overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&q=80" alt="Training" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+          </div>
+          <div class="h-48 rounded-sm overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&q=80" alt="Equipment" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+          </div>
+        </div>
+        <!-- Accent badge -->
+        <div class="absolute -bottom-5 -right-5 bg-neon text-dark px-5 py-4 font-display text-3xl tracking-wider rounded-sm shadow-2xl">
+          EST.<br/>2015
+        </div>
+      </div>
+
+      <!-- Right: content -->
+      <div class="reveal-right">
+        <p class="section-label mb-3 flex items-center gap-3">
+          <span class="w-6 h-0.5 bg-neon inline-block"></span>
+          About IronForge
+        </p>
+        <h2 class="section-title text-6xl md:text-7xl text-white mb-6">
+          NOT JUST A GYM.<br/>
+          <span class="text-neon">A LIFESTYLE.</span>
+        </h2>
+        <p class="text-gray-400 font-light leading-relaxed mb-5">
+          IronForge was built for those who refuse to settle. Founded in 2015, we've trained thousands of members to break their limits — physically and mentally. Our state-of-the-art facility combines cutting-edge equipment with science-backed training programs.
+        </p>
+        <p class="text-gray-400 font-light leading-relaxed mb-8">
+          Whether you're a beginner stepping into a gym for the first time or an elite athlete chasing peak performance — IronForge has the tools, trainers, and tribe to take you there.
+        </p>
+
+        <!-- Feature list -->
+        <div class="grid grid-cols-2 gap-4 mb-8">
+          <div class="flex items-center gap-3 text-sm">
+            <span class="w-5 h-5 rounded-full bg-neon/20 border border-neon flex items-center justify-center text-neon text-xs flex-shrink-0">✓</span>
+            <span class="text-gray-300">10,000 sq.ft Facility</span>
+          </div>
+          <div class="flex items-center gap-3 text-sm">
+            <span class="w-5 h-5 rounded-full bg-neon/20 border border-neon flex items-center justify-center text-neon text-xs flex-shrink-0">✓</span>
+            <span class="text-gray-300">Open 24 / 7</span>
+          </div>
+          <div class="flex items-center gap-3 text-sm">
+            <span class="w-5 h-5 rounded-full bg-neon/20 border border-neon flex items-center justify-center text-neon text-xs flex-shrink-0">✓</span>
+            <span class="text-gray-300">Locker Rooms & Showers</span>
+          </div>
+          <div class="flex items-center gap-3 text-sm">
+            <span class="w-5 h-5 rounded-full bg-neon/20 border border-neon flex items-center justify-center text-neon text-xs flex-shrink-0">✓</span>
+            <span class="text-gray-300">Nutrition Guidance</span>
+          </div>
+          <div class="flex items-center gap-3 text-sm">
+            <span class="w-5 h-5 rounded-full bg-neon/20 border border-neon flex items-center justify-center text-neon text-xs flex-shrink-0">✓</span>
+            <span class="text-gray-300">300+ Equipment</span>
+          </div>
+          <div class="flex items-center gap-3 text-sm">
+            <span class="w-5 h-5 rounded-full bg-neon/20 border border-neon flex items-center justify-center text-neon text-xs flex-shrink-0">✓</span>
+            <span class="text-gray-300">Group Classes Daily</span>
+          </div>
+        </div>
+        <a href="#contact" class="btn-neon inline-block px-8 py-4 rounded-sm text-sm"><span>Get Started Today</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ PROGRAMS ══════════════════════════ -->
+<section id="programs" class="py-24 md:py-32 bg-dark relative overflow-hidden">
+  <div class="absolute right-0 top-1/2 -translate-y-1/2 w-96 h-96 opacity-5" style="background: radial-gradient(circle, #AAFF00, transparent 70%); filter: blur(60px);"></div>
+
+  <div class="max-w-7xl mx-auto px-6 md:px-10">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
+      <div class="reveal">
+        <p class="section-label mb-3 flex items-center gap-3">
+          <span class="w-6 h-0.5 bg-neon inline-block"></span>
+          What We Offer
+        </p>
+        <h2 class="section-title text-6xl md:text-7xl text-white">OUR<br/><span class="text-neon">PROGRAMS</span></h2>
+      </div>
+      <p class="text-gray-500 max-w-sm font-light leading-relaxed reveal">
+        Expertly designed training programs for every fitness level and goal. Pick your path.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- Card 1: Weight Training -->
+      <div class="program-card rounded-sm p-7 reveal" style="transition-delay:0s">
+        <div class="card-icon mb-6">
+          <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5M3.75 8.25h16.5M3.75 15.75h16.5M6 5.25V18.75M18 5.25V18.75"/>
+          </svg>
+        </div>
+        <h3 class="font-heading font-bold text-2xl text-white uppercase tracking-wide mb-3">Weight Training</h3>
+        <p class="text-gray-500 text-sm font-light leading-relaxed mb-5">Build strength and muscle with progressive overload techniques guided by certified coaches.</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="text-xs font-heading font-600 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">Beginner</span>
+          <span class="text-xs font-heading font-600 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">Advanced</span>
+        </div>
+      </div>
+
+      <!-- Card 2: Cardio -->
+      <div class="program-card rounded-sm p-7 reveal" style="transition-delay:0.1s">
+        <div class="card-icon mb-6">
+          <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>
+          </svg>
+        </div>
+        <h3 class="font-heading font-bold text-2xl text-white uppercase tracking-wide mb-3">Cardio Burn</h3>
+        <p class="text-gray-500 text-sm font-light leading-relaxed mb-5">High-intensity cardio sessions engineered to torch fat, boost endurance, and elevate your VO2 max.</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="text-xs font-heading font-600 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">HIIT</span>
+          <span class="text-xs font-heading font-600 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">Treadmill</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Personal Training -->
+      <div class="program-card rounded-sm p-7 reveal" style="transition-delay:0.2s">
+        <div class="card-icon mb-6">
+          <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+          </svg>
+        </div>
+        <h3 class="font-heading font-bold text-2xl text-white uppercase tracking-wide mb-3">Personal Training</h3>
+        <p class="text-gray-500 text-sm font-light leading-relaxed mb-5">1-on-1 custom programs built around your body, goals, and schedule for maximum results, faster.</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="text-xs font-heading font-600 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">1-on-1</span>
+          <span class="text-xs font-heading font-600 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">Custom</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Yoga/Zumba -->
+      <div class="program-card rounded-sm p-7 reveal" style="transition-delay:0.3s">
+        <div class="card-icon mb-6">
+          <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <h3 class="font-heading font-bold text-2xl text-white uppercase tracking-wide mb-3">Yoga / Zumba</h3>
+        <p class="text-gray-500 text-sm font-light leading-relaxed mb-5">Balance, flexibility, and mindfulness — from serene yoga flows to high-energy Zumba dance classes.</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="text-xs font-heading font-600 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">Yoga</span>
+          <span class="text-xs font-heading font-600 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">Zumba</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ TRAINERS ══════════════════════════ -->
+<section id="trainers" class="py-24 md:py-32 bg-darkGray relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6 md:px-10">
+    <div class="text-center mb-14">
+      <p class="section-label mb-3 inline-flex items-center gap-3">
+        <span class="w-6 h-0.5 bg-neon inline-block"></span>
+        Meet the Team
+        <span class="w-6 h-0.5 bg-neon inline-block"></span>
+      </p>
+      <h2 class="section-title text-6xl md:text-7xl text-white reveal">
+        ELITE <span class="text-neon">TRAINERS</span>
+      </h2>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Trainer 1 -->
+      <div class="trainer-card rounded-sm reveal" style="transition-delay:0s">
+        <div class="relative h-80 overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=600&q=80" alt="Trainer Arjun" class="w-full h-full object-cover object-top" />
+          <div class="trainer-overlay absolute inset-0"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-6">
+            <h3 class="font-heading font-bold text-2xl text-white uppercase tracking-wide">Arjun Mehta</h3>
+            <p class="text-neon font-heading font-600 text-sm tracking-widest uppercase mt-1">Strength & Conditioning</p>
+          </div>
+        </div>
+        <div class="p-5 bg-panel">
+          <p class="text-gray-400 text-sm font-light leading-relaxed">10+ years coaching national-level athletes. NSCA-CSCS certified. Specialist in powerlifting and muscle hypertrophy.</p>
+          <div class="flex gap-3 mt-4">
+            <span class="text-xs font-heading font-700 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">Powerlifting</span>
+            <span class="text-xs font-heading font-700 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">Hypertrophy</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trainer 2 -->
+      <div class="trainer-card rounded-sm reveal" style="transition-delay:0.15s">
+        <div class="relative h-80 overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=600&q=80" alt="Trainer Priya" class="w-full h-full object-cover object-top" />
+          <div class="trainer-overlay absolute inset-0"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-6">
+            <h3 class="font-heading font-bold text-2xl text-white uppercase tracking-wide">Priya Sharma</h3>
+            <p class="text-neon font-heading font-600 text-sm tracking-widest uppercase mt-1">Yoga & Flexibility</p>
+          </div>
+        </div>
+        <div class="p-5 bg-panel">
+          <p class="text-gray-400 text-sm font-light leading-relaxed">RYT-500 certified yoga instructor with 8 years of experience in Hatha, Vinyasa, and therapeutic yoga practices.</p>
+          <div class="flex gap-3 mt-4">
+            <span class="text-xs font-heading font-700 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">Yoga</span>
+            <span class="text-xs font-heading font-700 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">Zumba</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trainer 3 -->
+      <div class="trainer-card rounded-sm reveal" style="transition-delay:0.3s">
+        <div class="relative h-80 overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80" alt="Trainer Karan" class="w-full h-full object-cover object-top" />
+          <div class="trainer-overlay absolute inset-0"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-6">
+            <h3 class="font-heading font-bold text-2xl text-white uppercase tracking-wide">Karan Patel</h3>
+            <p class="text-neon font-heading font-600 text-sm tracking-widest uppercase mt-1">HIIT & Cardio Coach</p>
+          </div>
+        </div>
+        <div class="p-5 bg-panel">
+          <p class="text-gray-400 text-sm font-light leading-relaxed">Former marathon runner and ACE-certified trainer specializing in high-intensity programs and fat-loss transformations.</p>
+          <div class="flex gap-3 mt-4">
+            <span class="text-xs font-heading font-700 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">HIIT</span>
+            <span class="text-xs font-heading font-700 tracking-wider uppercase px-3 py-1 bg-neon/10 text-neon border border-neon/20 rounded-sm">Fat Loss</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ PRICING ══════════════════════════ -->
+<section id="pricing" class="py-24 md:py-32 bg-dark relative overflow-hidden">
+  <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] opacity-5 rounded-full" style="background: radial-gradient(circle, #AAFF00, transparent 70%); filter: blur(80px);"></div>
+
+  <div class="max-w-7xl mx-auto px-6 md:px-10">
+    <div class="text-center mb-14">
+      <p class="section-label mb-3 inline-flex items-center gap-3">
+        <span class="w-6 h-0.5 bg-neon inline-block"></span>
+        Simple Pricing
+        <span class="w-6 h-0.5 bg-neon inline-block"></span>
+      </p>
+      <h2 class="section-title text-6xl md:text-7xl text-white reveal">
+        CHOOSE YOUR <span class="text-neon">PLAN</span>
+      </h2>
+      <p class="text-gray-500 mt-4 font-light max-w-md mx-auto">No hidden fees. No lock-ins. Just results.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      <!-- Monthly -->
+      <div class="pricing-card rounded-sm p-8 reveal" style="transition-delay:0s">
+        <p class="section-label mb-3">Monthly</p>
+        <div class="flex items-end gap-2 mb-6">
+          <span class="font-display text-7xl text-white leading-none">₹999</span>
+          <span class="text-gray-500 pb-2 font-body text-sm">/month</span>
+        </div>
+        <div class="w-full h-px bg-border mb-6"></div>
+        <ul class="space-y-3 mb-8">
+          <li class="flex items-center gap-3 text-gray-300 text-sm"><span class="text-neon font-bold">✓</span> Full Gym Access</li>
+          <li class="flex items-center gap-3 text-gray-300 text-sm"><span class="text-neon font-bold">✓</span> Group Classes</li>
+          <li class="flex items-center gap-3 text-gray-300 text-sm"><span class="text-neon font-bold">✓</span> Locker Facility</li>
+          <li class="flex items-center gap-3 text-gray-500 text-sm"><span class="text-gray-700 font-bold">✗</span> Personal Trainer</li>
+          <li class="flex items-center gap-3 text-gray-500 text-sm"><span class="text-gray-700 font-bold">✗</span> Nutrition Plan</li>
+        </ul>
+        <a href="#contact" class="btn-outline w-full py-3 rounded-sm text-sm text-center block">Get Started</a>
+      </div>
+
+      <!-- Quarterly (Popular) -->
+      <div class="pricing-card pricing-popular rounded-sm p-8 reveal relative" style="transition-delay:0.15s">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-neon text-dark font-heading font-800 text-xs tracking-widest uppercase px-5 py-1.5 rounded-sm whitespace-nowrap">
+          ★ Most Popular
+        </div>
+        <p class="section-label mb-3">Quarterly</p>
+        <div class="flex items-end gap-2 mb-6">
+          <span class="font-display text-7xl text-neon leading-none neon-glow">₹2499</span>
+          <span class="text-gray-500 pb-2 font-body text-sm">/3 months</span>
+        </div>
+        <div class="w-full h-px bg-neon/20 mb-6"></div>
+        <ul class="space-y-3 mb-8">
+          <li class="flex items-center gap-3 text-gray-300 text-sm"><span class="text-neon font-bold">✓</span> Full Gym Access</li>
+          <li class="flex items-center gap-3 text-gray-300 text-sm"><span class="text-neon font-bold">✓</span> All Group Classes</li>
+          <li class="flex items-center gap-3 text-gray-300 text-sm"><span class="text-neon font-bold">✓</span> Locker Facility</li>
+          <li class="flex items-center gap-3 text-gray-300 text-sm"><span class="text-neon font-bold">✓</span> 2 PT Sessions/Month</li>
+          <li class="flex items-center gap-3 text-gray-500 text-sm"><span class="text-gray-700 font-bold">✗</span> Nutrition Plan</li>
+        </ul>
+        <a href="#contact" class="btn-neon w-full py-3 rounded-sm text-sm text-center block"><span>Get Started</span></a>
+      </div>
+
+      <!-- Yearly -->
+      <div class="pricing-card rounded-sm p-8 reveal" style="transition-delay:0.3s">
+        <div class="absolute top-4 right-4 bg-neon/10 border border-neon/30 text-neon text-xs font-heading font-700 tracking-wider uppercase px-3 py-1 rounded-sm">Save 30%</div>
+        <p class="section-label mb-3">Yearly</p>
+        <div class="flex items-end gap-2 mb-6">
+          <span class="font-display text-7xl text-white leading-none">₹7999</span>
+          <span class="text-gray-500 pb-2 font-body text-sm">/year</span>
+        </div>
+        <div class="w-full h-px bg-border mb-6"></div>
+        <ul class="space-y-3 mb-8">
+          <li class="flex items-center gap-3 text-gray-300 text-sm"><span class="text-neon font-bold">✓</span> Full Gym Access</li>
+          <li class="flex items-center gap-3 text-gray-300 text-sm"><span class="text-neon font-bold">✓</span> All Group Classes</li>
+          <li class="flex items-center gap-3 text-gray-300 text-sm"><span class="text-neon font-bold">✓</span> Locker Facility</li>
+          <li class="flex items-center gap-3 text-gray-300 text-sm"><span class="text-neon font-bold">✓</span> Unlimited PT Sessions</li>
+          <li class="flex items-center gap-3 text-gray-300 text-sm"><span class="text-neon font-bold">✓</span> Custom Nutrition Plan</li>
+        </ul>
+        <a href="#contact" class="btn-outline w-full py-3 rounded-sm text-sm text-center block">Get Started</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ TESTIMONIALS ══════════════════════════ -->
+<section class="py-24 md:py-32 bg-darkGray relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6 md:px-10">
+    <div class="text-center mb-14">
+      <p class="section-label mb-3 inline-flex items-center gap-3">
+        <span class="w-6 h-0.5 bg-neon inline-block"></span>
+        Real Results
+        <span class="w-6 h-0.5 bg-neon inline-block"></span>
+      </p>
+      <h2 class="section-title text-6xl md:text-7xl text-white reveal">
+        MEMBER <span class="text-neon">STORIES</span>
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Review 1 -->
+      <div class="testimonial-card rounded-sm p-7 reveal" style="transition-delay:0s">
+        <div class="stars text-xl mb-4">★★★★★</div>
+        <p class="text-gray-300 font-light leading-relaxed mb-6 italic">
+          "I lost 18 kg in 5 months with IronForge. The trainers are exceptional and the environment keeps you fired up. Best decision of my life."
+        </p>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full overflow-hidden bg-panel">
+            <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&q=80" alt="Rahul" class="w-full h-full object-cover" />
+          </div>
+          <div>
+            <p class="font-heading font-700 text-white text-sm uppercase tracking-wide">Rahul Verma</p>
+            <p class="text-gray-500 text-xs font-body">Member since 2022</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review 2 -->
+      <div class="testimonial-card rounded-sm p-7 reveal" style="transition-delay:0.15s">
+        <div class="stars text-xl mb-4">★★★★★</div>
+        <p class="text-gray-300 font-light leading-relaxed mb-6 italic">
+          "From a complete beginner to deadlifting 100 kg in 8 months — IronForge made it possible. Karan's training is next level. Can't recommend enough."
+        </p>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full overflow-hidden bg-panel">
+            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" alt="Sneha" class="w-full h-full object-cover" />
+          </div>
+          <div>
+            <p class="font-heading font-700 text-white text-sm uppercase tracking-wide">Sneha Reddy</p>
+            <p class="text-gray-500 text-xs font-body">Member since 2023</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review 3 -->
+      <div class="testimonial-card rounded-sm p-7 reveal" style="transition-delay:0.3s">
+        <div class="stars text-xl mb-4">★★★★★</div>
+        <p class="text-gray-300 font-light leading-relaxed mb-6 italic">
+          "The 24/7 access is a game-changer for my schedule. Clean, well-equipped, friendly community. IronForge genuinely feels like a second home."
+        </p>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full overflow-hidden bg-panel">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80" alt="Vikram" class="w-full h-full object-cover" />
+          </div>
+          <div>
+            <p class="font-heading font-700 text-white text-sm uppercase tracking-wide">Vikram Singh</p>
+            <p class="text-gray-500 text-xs font-body">Member since 2021</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ CONTACT ══════════════════════════ -->
+<section id="contact" class="py-24 md:py-32 bg-dark relative overflow-hidden">
+  <div class="absolute top-0 left-0 w-full h-full opacity-5" style="background: radial-gradient(ellipse at 80% 50%, #AAFF00, transparent 60%); filter: blur(60px);"></div>
+
+  <div class="max-w-7xl mx-auto px-6 md:px-10">
+    <div class="grid lg:grid-cols-2 gap-16 items-start">
+      <!-- Left: Contact Info -->
+      <div>
+        <p class="section-label mb-3 flex items-center gap-3 reveal">
+          <span class="w-6 h-0.5 bg-neon inline-block"></span>
+          Get In Touch
+        </p>
+        <h2 class="section-title text-6xl md:text-7xl text-white mb-6 reveal">
+          START YOUR<br/><span class="text-neon">JOURNEY</span>
+        </h2>
+        <p class="text-gray-400 font-light leading-relaxed mb-10 reveal">
+          Ready to transform? Visit us, call us, or drop a message on WhatsApp. We'll get you started within 24 hours.
+        </p>
+
+        <div class="space-y-6 reveal">
+          <div class="flex items-start gap-4">
+            <div class="w-11 h-11 bg-neon/10 border border-neon/20 rounded-sm flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="18" height="18" fill="none" stroke="#AAFF00" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+            </div>
+            <div>
+              <p class="font-heading font-700 text-white text-sm uppercase tracking-wider mb-1">Address</p>
+              <p class="text-gray-400 font-light text-sm">42, Fitness Avenue, HSR Layout<br/>Bengaluru, Karnataka — 560102</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="w-11 h-11 bg-neon/10 border border-neon/20 rounded-sm flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="18" height="18" fill="none" stroke="#AAFF00" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+            </div>
+            <div>
+              <p class="font-heading font-700 text-white text-sm uppercase tracking-wider mb-1">Phone</p>
+              <a href="tel:+919999999999" class="text-gray-400 font-light text-sm hover:text-neon transition-colors">+91 99999 99999</a>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="w-11 h-11 bg-neon/10 border border-neon/20 rounded-sm flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="18" height="18" fill="none" stroke="#AAFF00" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+            </div>
+            <div>
+              <p class="font-heading font-700 text-white text-sm uppercase tracking-wider mb-1">Email</p>
+              <a href="mailto:hello@ironforge.in" class="text-gray-400 font-light text-sm hover:text-neon transition-colors">hello@ironforge.in</a>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="w-11 h-11 bg-neon/10 border border-neon/20 rounded-sm flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="18" height="18" fill="none" stroke="#AAFF00" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+              <p class="font-heading font-700 text-white text-sm uppercase tracking-wider mb-1">Hours</p>
+              <p class="text-gray-400 font-light text-sm">Open 24/7 — Every Day</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Form + Map -->
+      <div class="space-y-6 reveal-right">
+        <!-- Quick Form -->
+        <div class="bg-panel border border-border rounded-sm p-7">
+          <h3 class="font-heading font-700 text-xl text-white uppercase tracking-wide mb-6">Send a Message</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="section-label text-xs mb-2 block">Your Name</label>
+              <input type="text" placeholder="John Doe" class="w-full bg-dark border border-border rounded-sm px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-neon transition-colors font-body" />
+            </div>
+            <div>
+              <label class="section-label text-xs mb-2 block">Phone Number</label>
+              <input type="tel" placeholder="+91 98765 43210" class="w-full bg-dark border border-border rounded-sm px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-neon transition-colors font-body" />
+            </div>
+            <div>
+              <label class="section-label text-xs mb-2 block">Program Interest</label>
+              <select class="w-full bg-dark border border-border rounded-sm px-4 py-3 text-gray-400 text-sm focus:outline-none focus:border-neon transition-colors font-body">
+                <option value="">Select a program...</option>
+                <option>Weight Training</option>
+                <option>Cardio Burn</option>
+                <option>Personal Training</option>
+                <option>Yoga / Zumba</option>
+              </select>
+            </div>
+            <div>
+              <label class="section-label text-xs mb-2 block">Message</label>
+              <textarea rows="3" placeholder="Tell us your fitness goals..." class="w-full bg-dark border border-border rounded-sm px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-neon transition-colors font-body resize-none"></textarea>
+            </div>
+            <button onclick="handleFormSubmit(this)" class="btn-neon w-full py-3.5 rounded-sm text-sm"><span>Send Message →</span></button>
+          </div>
+        </div>
+
+        <!-- Map embed -->
+        <div class="map-container rounded-sm h-52">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.5860234765247!2d77.6309879!3d12.9121456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1490e3b1a43f%3A0x3e5b3e3e3e3e3e3e!2sHSR+Layout%2C+Bengaluru%2C+Karnataka!5e0!3m2!1sen!2sin!4v1680000000000!5m2!1sen!2sin"
+            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ FOOTER ══════════════════════════ -->
+<footer class="bg-darkGray border-t border-border py-12 px-6 md:px-10">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid md:grid-cols-4 gap-10 mb-10">
+      <!-- Brand -->
+      <div class="col-span-2 md:col-span-1">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-8 h-8 bg-neon flex items-center justify-center rounded-sm">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+              <path d="M3 10H17M3 6H8M12 14H17M6 6V14M14 6V14" stroke="#0A0A0A" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="font-display text-xl tracking-widest text-white">IRONFORGE</span>
+        </div>
+        <p class="text-gray-500 text-sm font-light leading-relaxed">Forging stronger bodies and unbreakable minds since 2015.</p>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <p class="section-label mb-4">Quick Links</p>
+        <ul class="space-y-2">
+          <li><a href="#home" class="text-gray-500 text-sm hover:text-neon transition-colors font-body">Home</a></li>
+          <li><a href="#about" class="text-gray-500 text-sm hover:text-neon transition-colors font-body">About</a></li>
+          <li><a href="#programs" class="text-gray-500 text-sm hover:text-neon transition-colors font-body">Programs</a></li>
+          <li><a href="#trainers" class="text-gray-500 text-sm hover:text-neon transition-colors font-body">Trainers</a></li>
+          <li><a href="#pricing" class="text-gray-500 text-sm hover:text-neon transition-colors font-body">Pricing</a></li>
+        </ul>
+      </div>
+
+      <!-- Programs -->
+      <div>
+        <p class="section-label mb-4">Programs</p>
+        <ul class="space-y-2">
+          <li><a href="#programs" class="text-gray-500 text-sm hover:text-neon transition-colors font-body">Weight Training</a></li>
+          <li><a href="#programs" class="text-gray-500 text-sm hover:text-neon transition-colors font-body">Cardio Burn</a></li>
+          <li><a href="#programs" class="text-gray-500 text-sm hover:text-neon transition-colors font-body">Personal Training</a></li>
+          <li><a href="#programs" class="text-gray-500 text-sm hover:text-neon transition-colors font-body">Yoga / Zumba</a></li>
+        </ul>
+      </div>
+
+      <!-- Social -->
+      <div>
+        <p class="section-label mb-4">Follow Us</p>
+        <div class="flex gap-3">
+          <a href="#" class="w-9 h-9 bg-dark border border-border rounded-sm flex items-center justify-center text-gray-500 hover:text-neon hover:border-neon transition-all">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </a>
+          <a href="#" class="w-9 h-9 bg-dark border border-border rounded-sm flex items-center justify-center text-gray-500 hover:text-neon hover:border-neon transition-all">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://wa.me/919999999999" target="_blank" class="w-9 h-9 bg-dark border border-border rounded-sm flex items-center justify-center text-gray-500 hover:text-neon hover:border-neon transition-all">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-border pt-7 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-gray-600 text-xs font-body">© 2025 IronForge Gym. All rights reserved.</p>
+      <p class="text-gray-600 text-xs font-body">Bengaluru, Karnataka, India</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════ FLOATING WHATSAPP ══════════════════════════ -->
+<a href="https://wa.me/919999999999" target="_blank" class="whatsapp-float">
+  <div class="w-14 h-14 rounded-full flex items-center justify-center shadow-xl" style="background:#25D366;">
+    <svg width="28" height="28" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </div>
+</a>
+
+<!-- ══════════════════════════ JAVASCRIPT ══════════════════════════ -->
+<script>
+  // ── Navbar scroll ──────────────────────────────────────────────
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ── Mobile menu ────────────────────────────────────────────────
+  let menuOpen = false;
+  function toggleMenu() {
+    menuOpen = !menuOpen;
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('open', menuOpen);
+    document.getElementById('bar1').style.transform = menuOpen ? 'translateY(8px) rotate(45deg)' : '';
+    document.getElementById('bar2').style.opacity = menuOpen ? '0' : '1';
+    document.getElementById('bar3').style.transform = menuOpen ? 'translateY(-8px) rotate(-45deg)' : '';
+    document.getElementById('bar3').style.width = menuOpen ? '24px' : '16px';
+  }
+  function closeMenu() {
+    menuOpen = false;
+    document.getElementById('mobile-menu').classList.remove('open');
+    document.getElementById('bar1').style.transform = '';
+    document.getElementById('bar2').style.opacity = '1';
+    document.getElementById('bar3').style.transform = '';
+    document.getElementById('bar3').style.width = '16px';
+  }
+
+  // ── Scroll reveal ──────────────────────────────────────────────
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
+    observer.observe(el);
+  });
+
+  // ── Active nav highlight ───────────────────────────────────────
+  const sections = document.querySelectorAll('section[id]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+    });
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.style.color = link.getAttribute('href') === `#${current}` ? '#AAFF00' : '';
+    });
+  });
+
+  // ── Form submit ────────────────────────────────────────────────
+  function handleFormSubmit(btn) {
+    const original = btn.innerHTML;
+    btn.innerHTML = '<span>Sending...</span>';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.innerHTML = '<span>✓ Message Sent!</span>';
+      btn.style.background = '#22c55e';
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 3000);
+    }, 1200);
+  }
+</script>
+</body>
+</html>
