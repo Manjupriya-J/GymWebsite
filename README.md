@@ -24,7 +24,7 @@ This project showcases a clean UI design for fitness businesses with sections li
 ![Home](images/home.png)
 
 ### 💪 Services
-![Services](images/package.png)
+![package](images/package.png)
 
 
 
