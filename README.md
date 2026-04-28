@@ -22,6 +22,8 @@ This project showcases a clean UI design for fitness businesses with sections li
   <img src="images/home.png" width="80%" /><br><br>
   <img src="images/package.png" width="80%" />
 </p>
+
+
 ### 🏠 Home Page
 ![Home](images/home.png)
 
